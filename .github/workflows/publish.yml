@@ -1,43 +1,32 @@
-name: Publish to GitHub Packages
+name: CI
 
 on:
-  push:
+  pull_request:
     branches: [main]
 
 jobs:
-  publish:
+  test:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
-      
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-        
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@tencent-international'
-          
+
       - name: Enable Corepack
         run: corepack enable
-          
+
       - name: Install dependencies
-        run: yarn install --immutable
-        
+        run: yarn install --immutable --inline-builds
+
       - name: Lint and type check
         run: |
-          if npm run lint > /dev/null 2>&1; then npm run lint; fi
-          if npm run type-check > /dev/null 2>&1; then npm run type-check; fi
-        
-      - name: Run semantic-release
-        run: yarn semantic-release -e ./.ci/release.config.js
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CI: true 
+          if yarn run lint --help > /dev/null 2>&1; then yarn run lint; fi
+          if yarn run type-check --help > /dev/null 2>&1; then yarn run type-check; fi
+
+      - name: Build
+        run: yarn build
