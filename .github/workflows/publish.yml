@@ -31,7 +31,7 @@ jobs:
         run: corepack enable
           
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --immutable
         
       - name: Lint and type check
         run: |
