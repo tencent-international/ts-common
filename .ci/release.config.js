@@ -13,11 +13,6 @@ module.exports = {
   plugins: [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
-    // ⬇️ 在 prepare 阶段写入 .version
-    ["@semantic-release/exec", {
-      prepareCmd: "echo ${nextRelease.version} > .ci/.version",
-      shell: true
-    }],
     ["@semantic-release/npm", {
       npmPublish: true
     }],
