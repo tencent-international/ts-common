@@ -9,11 +9,9 @@ module.exports = {
       prerelease: "rc"
     }
   ],
-  repositoryUrl: "https://github.com/tencent-international/ts-common.git",
+  repositoryUrl: "git@github.com:tencent-international/ts-common.git",
   plugins: [
-    ["@semantic-release/commit-analyzer", {
-      preset: "conventionalcommits"
-    }],
+    "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
     // ⬇️ 在 prepare 阶段写入 .version
     ["@semantic-release/exec", {
