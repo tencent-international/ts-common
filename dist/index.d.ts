@@ -32,4 +32,17 @@ interface IRequest<T extends any = any> {
 }
 declare function useRequest(i: IRequest): void;
 
-export { type IRequest, type LabeledDictionaryItem, LocalizedDictionary, type RequestProps, useRequest };
+type DefaultBaseHeader = BasicTypes.DefaultBaseHeader;
+type DefaultResponseWrapper<T> = BasicTypes.DefaultResponseWrapper<T>;
+type ErrorDetails = BasicTypes.ErrorDetails;
+type PublicUploadCredentials = BasicTypes.PublicUploadCredentials;
+type Request = BasicTypes.Request;
+type SigningRequest = BasicTypes.SigningRequest;
+type ContentType = BasicTypes.ContentType;
+type CountryCode = BasicTypes.CountryCode;
+type ErrType = BasicTypes.ErrType;
+type Gender = BasicTypes.Gender;
+type Locale = BasicTypes.Locale;
+type Platform = BasicTypes.Platform;
+
+export { type ContentType, type CountryCode, type DefaultBaseHeader, type DefaultResponseWrapper, type ErrType, type ErrorDetails, type Gender, type IRequest, type LabeledDictionaryItem, type Locale, LocalizedDictionary, type Platform, type PublicUploadCredentials, type Request, type RequestProps, type SigningRequest, useRequest };
