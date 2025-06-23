@@ -29,19 +29,24 @@ export CI=true
 
 # 检查 GITHUB_TOKEN 环境变量
 if [[ -z "$GITHUB_TOKEN" ]]; then
-    echo "🔑 需要 GitHub Personal Access Token 来发布包"
-    echo "请输入你的 GitHub Token (需要 write:packages 权限):"
-    read -s GITHUB_TOKEN
-    echo
+    # 尝试从 ~/.bashrc 加载
+    source ~/.bashrc 2>/dev/null || true
     
     if [[ -z "$GITHUB_TOKEN" ]]; then
-        echo "❌ Token 不能为空"
-        exit 1
+        echo "🔑 需要 GitHub Personal Access Token 来发布包"
+        echo "请输入你的 GitHub Token (需要 write:packages 权限):"
+        read -s GITHUB_TOKEN
+        echo
+        
+        if [[ -z "$GITHUB_TOKEN" ]]; then
+            echo "❌ Token 不能为空"
+            exit 1
+        fi
+        
+        # 保存到 ~/.bashrc
+        echo "export GITHUB_TOKEN=$GITHUB_TOKEN" >> ~/.bashrc
+        echo "✅ Token 已保存到 ~/.bashrc，重新打开终端后生效"
     fi
-    
-    # 保存到 ~/.bashrc
-    echo "export GITHUB_TOKEN=$GITHUB_TOKEN" >> ~/.bashrc
-    echo "✅ Token 已保存到 ~/.bashrc，重新打开终端后生效"
 fi
 
 export GITHUB_TOKEN
