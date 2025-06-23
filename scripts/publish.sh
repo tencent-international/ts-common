@@ -22,11 +22,11 @@ if [[ "$CURRENT_BRANCH" != "main" ]]; then
 fi
 
 # lint 和类型检查
-npm run lint
-npm run type-check
+yarn run lint
+yarn run type-check
 
 # 执行发布流程
-yarn install
+yarn install --immutable
 
 # 设置环境变量强制 semantic-release 执行真实发布
 export CI=true
