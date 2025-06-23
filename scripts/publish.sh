@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# 切换到项目根目录
+cd "$(dirname "$0")/.."
+
 # 检查是否有未提交的更改
 if [[ -n $(git status --porcelain) ]]; then
     echo "❌ 有未提交的更改，请先提交或暂存更改"
@@ -19,7 +22,7 @@ if [[ "$CURRENT_BRANCH" != "main" ]]; then
 fi
 
 # 执行发布流程
-npm --prefix .ci ci
-npx --prefix .ci semantic-release -e ./.ci/release.config.js
+yarn install
+yarn semantic-release -e ./.ci/release.config.js
 npm version $(cat .ci/.version)
 npm publish

@@ -9,7 +9,7 @@ module.exports = {
       prerelease: "rc"
     }
   ],
-  repositoryUrl: "https://bitbucket.org/tencent-international/go-pkg.git",
+  repositoryUrl: "https://github.com/tencent-international/ts-common.git",
   plugins: [
     ["@semantic-release/commit-analyzer", {
       preset: "conventionalcommits"
