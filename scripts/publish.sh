@@ -54,7 +54,9 @@ if [[ -z "$GITHUB_TOKEN" ]]; then
 fi
 
 export GITHUB_TOKEN
+START=$(date +%s)
 
-yarn semantic-release -e ./.ci/release.config.js
-
+time yarn semantic-release -e ./.ci/release.config.js
+END=$(date +%s)
+echo "semantic-release 总耗时 $((END - START)) 秒"
 echo "✅ 发布完成！"
