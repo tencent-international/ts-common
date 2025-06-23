@@ -16,8 +16,8 @@ module.exports = {
     ["@semantic-release/npm", {
       npmPublish: true
     }],
-    ["@semantic-release/git", {
-      message: "chore(release): ${nextRelease.version} [skip ci]"
-    }]
+    // ["@semantic-release/git", {
+    //   message: "chore(release): ${nextRelease.version} [skip ci]"
+    // }]
   ]
 }
