@@ -1,0 +1,32 @@
+{
+  "name": "@tencent-international/ts-common",
+  "version": "1.0.0",
+  "description": "TypeScript common types and utilities",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src/BasicTypes.d.ts",
+    "src/global.d.ts"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "prepublishOnly": "yarn build"
+  },
+  "keywords": [
+    "typescript",
+    "types",
+    "utilities"
+  ],
+  "author": "Tencent International",
+  "license": "MIT",
+  "packageManager": "yarn@4.6.0",
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "typescript": ">=4.0.0"
+  }
+}

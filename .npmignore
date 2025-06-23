@@ -1,0 +1,24 @@
+# Source files
+src/
+!src/BasicTypes.d.ts
+
+# Build files
+tsup.config.ts
+tsconfig.json
+
+# Development files
+.git/
+.gitignore
+README.md
+yarn.lock
+node_modules/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db 
