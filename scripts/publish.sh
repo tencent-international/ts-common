@@ -23,6 +23,33 @@ fi
 
 # 执行发布流程
 yarn install
+
+# 设置环境变量强制 semantic-release 执行真实发布
+export CI=true
+
+# 检查 GITHUB_TOKEN 环境变量
+if [[ -z "$GITHUB_TOKEN" ]]; then
+    echo "🔑 需要 GitHub Personal Access Token 来发布包"
+    echo "请输入你的 GitHub Token (需要 write:packages 权限):"
+    read -s GITHUB_TOKEN
+    echo
+    
+    if [[ -z "$GITHUB_TOKEN" ]]; then
+        echo "❌ Token 不能为空"
+        exit 1
+    fi
+    
+    # 保存到 ~/.bashrc
+    echo "export GITHUB_TOKEN=$GITHUB_TOKEN" >> ~/.bashrc
+    echo "✅ Token 已保存到 ~/.bashrc，重新打开终端后生效"
+fi
+
+export GITHUB_TOKEN
+
 yarn semantic-release -e ./.ci/release.config.js
-npm version $(cat .ci/.version)
+
+VERSION=$(cat .ci/.version)
+echo "📦 准备发布版本: $VERSION"
+
+npm version $VERSION
 npm publish
