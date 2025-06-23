@@ -21,47 +21,10 @@ if [[ "$CURRENT_BRANCH" != "main" ]]; then
         exit 1
     fi
 fi
+npm --prefix .ci ci
+npx --prefix .ci semantic-release -e ./.ci/release.config.js
+NEW_VERSION=$(cat .ci/.version)
+npm version $NEW_VERSION
+npm publish
 
-# 获取版本类型
-echo "选择版本类型："
-echo "1) patch (补丁版本，如 1.0.0 -> 1.0.1)"
-echo "2) minor (次要版本，如 1.0.0 -> 1.1.0)"
-echo "3) major (主要版本，如 1.0.0 -> 2.0.0)"
-read -p "请输入选择 (1-3): " VERSION_TYPE
-
-case $VERSION_TYPE in
-    1) VERSION_CMD="patch" ;;
-    2) VERSION_CMD="minor" ;;
-    3) VERSION_CMD="major" ;;
-    *) echo "❌ 无效选择"; exit 1 ;;
-esac
-
-# 更新版本号
-echo "📦 更新版本号..."
-yarn version --$VERSION_CMD --no-git-tag-version
-
-# 获取新版本号
-NEW_VERSION=$(node -p "require('./package.json').version")
-echo "✅ 版本已更新到: $NEW_VERSION"
-
-# 构建项目
-echo "🔨 构建项目..."
-yarn build
-
-# 提交更改
-echo "📝 提交更改..."
-git add .
-git commit -m "chore: release v$NEW_VERSION"
-
-# 创建标签
-echo "🏷️  创建标签..."
-git tag "v$NEW_VERSION"
-
-# 推送代码和标签
-echo "📤 推送代码和标签..."
-git push origin main
-git push origin "v$NEW_VERSION"
-
-echo "✅ 发布流程完成！"
-echo "📦 包将自动发布到 GitHub Packages"
 echo "🔗 查看包: https://github.com/tencent-international/ts-common/packages" 

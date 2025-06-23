@@ -9,6 +9,7 @@ TypeScript 通用类型和工具库
 ```bash
 # 配置 npm 使用 GitHub Packages
 npm config set @tencent-international:registry https://npm.pkg.github.com
+npm config set //npm.pkg.github.com/:_authToken YOUR_GITHUB_TOKEN
 
 # 安装包
 npm install @tencent-international/ts-common

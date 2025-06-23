@@ -3,7 +3,18 @@
   "version": "1.0.0",
   "description": "TypeScript 通用类型和工具库",
   "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./src/BasicTypes.d.ts"
+    }
+  },
   "files": [
     "dist",
     "src/BasicTypes.d.ts",
@@ -18,7 +29,9 @@
   "keywords": [
     "typescript",
     "types",
-    "utilities"
+    "utilities",
+    "internationalization",
+    "i18n"
   ],
   "author": "Tencent International",
   "license": "MIT",
@@ -35,6 +48,7 @@
   },
   "packageManager": "yarn@4.6.0",
   "devDependencies": {
+    "@types/node": "^22.0.0",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
   },
