@@ -1,7 +1,7 @@
 {
   "name": "@tencent-international/ts-common",
   "version": "1.0.0",
-  "description": "TypeScript common types and utilities",
+  "description": "TypeScript 通用类型和工具库",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -12,7 +12,8 @@
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
-    "prepublishOnly": "yarn build"
+    "prepublishOnly": "yarn build",
+    "release": "./scripts/publish.sh"
   },
   "keywords": [
     "typescript",
@@ -21,6 +22,17 @@
   ],
   "author": "Tencent International",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tencent-international/ts-common.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tencent-international/ts-common/issues"
+  },
+  "homepage": "https://github.com/tencent-international/ts-common#readme",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "packageManager": "yarn@4.6.0",
   "devDependencies": {
     "tsup": "^8.5.0",

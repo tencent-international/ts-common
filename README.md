@@ -4,6 +4,18 @@ TypeScript 通用类型和工具库
 
 ## 安装
 
+### 从 GitHub Packages 安装
+
+```bash
+# 配置 npm 使用 GitHub Packages
+npm config set @tencent-international:registry https://npm.pkg.github.com
+
+# 安装包
+npm install @tencent-international/ts-common
+```
+
+### 从 npm 安装（如果已发布到 npm）
+
 ```bash
 npm install @tencent-international/ts-common
 # 或
@@ -63,10 +75,28 @@ yarn dev
 
 ### 发布
 
+#### 手动发布到 GitHub Packages
+
 ```bash
-# 构建并发布到 npm
+# 1. 登录到 GitHub Packages
+npm login --registry=https://npm.pkg.github.com
+
+# 2. 构建项目
+yarn build
+
+# 3. 发布到 GitHub Packages
 yarn publish
 ```
+
+#### 自动发布（推荐）
+
+1. 创建并推送标签：
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+2. GitHub Actions 会自动构建并发布到 GitHub Packages
 
 ## 类型说明
 
@@ -89,12 +119,21 @@ yarn publish
 
 ## 发布流程
 
+### 自动发布（推荐）
+
+1. 更新版本号：`yarn version patch|minor|major`
+2. 推送代码和标签：`git push && git push --tags`
+3. GitHub Actions 自动构建并发布
+
+### 手动发布
+
 1. 更新版本号：`yarn version patch|minor|major`
 2. 构建项目：`yarn build`
-3. 发布到 npm：`yarn publish`
+3. 发布到 GitHub Packages：`yarn publish`
 
 ## 注意事项
 
 - `BasicTypes.d.ts` 文件会被包含在发布包中，确保全局类型可用
 - 使用 `tsconfig.json` 中的 `types` 字段来全局引用类型
 - 支持 CommonJS 和 ESM 两种模块格式
+- 包发布到 GitHub Packages，需要配置相应的 registry
