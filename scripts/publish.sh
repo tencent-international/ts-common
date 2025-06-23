@@ -22,20 +22,8 @@ if [[ "$CURRENT_BRANCH" != "main" ]]; then
 fi
 
 # lint 和类型检查（如果存在的话）
-echo "🔍 代码检查..."
-if yarn run lint --help &>/dev/null; then
-    echo "  运行 lint..."
-    yarn run lint
-else
-    echo "  跳过 lint（未配置）"
-fi
-
-if yarn run type-check --help &>/dev/null; then
-    echo "  运行 type-check..."
-    yarn run type-check
-else
-    echo "  跳过 type-check（未配置）"
-fi
+yarn run lint
+yarn run type-check
 
 # 执行发布流程
 yarn install --immutable
