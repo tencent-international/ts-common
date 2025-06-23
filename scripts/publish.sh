@@ -21,6 +21,10 @@ if [[ "$CURRENT_BRANCH" != "main" ]]; then
     fi
 fi
 
+# lint 和类型检查
+npm run lint
+npm run type-check
+
 # 执行发布流程
 yarn install
 

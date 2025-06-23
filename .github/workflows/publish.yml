@@ -2,19 +2,23 @@ name: Publish to GitHub Packages
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
-    
+      
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
         
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -23,19 +27,19 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@tencent-international'
           
-      - name: Setup Yarn
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'yarn'
+      - name: Enable Corepack
+        run: corepack enable
           
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install
         
-      - name: Build package
-        run: yarn build
+      - name: Lint and type check
+        run: |
+          if npm run lint > /dev/null 2>&1; then npm run lint; fi
+          if npm run type-check > /dev/null 2>&1; then npm run type-check; fi
         
-      - name: Publish to GitHub Packages
-        run: yarn publish --non-interactive
+      - name: Run semantic-release
+        run: yarn semantic-release -e ./.ci/release.config.js
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI: true 
