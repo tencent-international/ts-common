@@ -18,6 +18,9 @@ module.exports = {
       prepareCmd: "echo ${nextRelease.version} > .ci/.version",
       shell: true
     }],
+    ["@semantic-release/npm", {
+      npmPublish: true
+    }],
     ["@semantic-release/git", {
       message: "chore(release): ${nextRelease.version} [skip ci]"
     }]

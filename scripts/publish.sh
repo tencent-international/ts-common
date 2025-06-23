@@ -48,8 +48,4 @@ export GITHUB_TOKEN
 
 yarn semantic-release -e ./.ci/release.config.js
 
-VERSION=$(cat .ci/.version)
-echo "📦 准备发布版本: $VERSION"
-
-npm version $VERSION
-npm publish
+echo "✅ 发布完成！"
