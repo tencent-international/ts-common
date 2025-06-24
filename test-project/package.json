@@ -1,0 +1,19 @@
+{
+  "name": "ts-common-test",
+  "version": "1.0.0",
+  "description": "Test project for @tencent-international/ts-common",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js",
+    "build": "tsc",
+    "dev": "ts-node index.ts"
+  },
+  "dependencies": {
+    "@tencent-international/ts-common": "1.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.0.0"
+  }
+} 

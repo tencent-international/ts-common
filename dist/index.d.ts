@@ -1,6 +1,8 @@
+type Locale = '' | 'zh-CN' | 'zh-TW' | 'zh-HK' | 'en-US' | 'en-GB' | 'en-AU' | 'en-CA' | 'en-IN' | 'fr-FR' | 'fr-CA' | 'de-DE' | 'fil-PH' | 'de-CH' | 'es-ES' | 'es-MX' | 'es-US' | 'ja-JP' | 'ko-KR' | 'ru-RU' | 'pt-BR' | 'pt-PT' | 'ar-SA' | 'ar-EG' | 'hi-IN' | 'it-IT' | 'it-CH' | 'nl-NL' | 'nl-BE' | 'pl-PL' | 'vi-VN' | 'th-TH' | 'el-GR' | 'tr-TR' | 'sv-SE';
+
 interface LocalizedDictionaryItem<T extends string | number = string> {
     value: T;
-    localizedInfo?: Partial<Record<BasicTypes.Locale, {
+    localizedInfo?: Partial<Record<Locale, {
         label: string;
         tip?: string;
     }>>;
@@ -14,9 +16,9 @@ declare class LocalizedDictionary<T extends string | number = string> {
     private readonly items;
     private readonly map;
     constructor(items: LocalizedDictionaryItem<T>[]);
-    getItem(key: T, locale: BasicTypes.Locale): LabeledDictionaryItem<T>;
-    getItems(locale: BasicTypes.Locale): LabeledDictionaryItem<T>[];
-    getMap(locale: BasicTypes.Locale): Record<T, LabeledDictionaryItem<T>>;
+    getItem(key: T, locale: Locale): LabeledDictionaryItem<T>;
+    getItems(locale: Locale): LabeledDictionaryItem<T>[];
+    getMap(locale: Locale): Record<T, LabeledDictionaryItem<T>>;
 }
 
 interface RequestProps {
@@ -31,18 +33,6 @@ interface IRequest<T extends any = any> {
     (props: RequestProps): Promise<T>;
 }
 declare function useRequest(i: IRequest): void;
+declare function request<T extends any = any>(props: RequestProps): Promise<T>;
 
-type DefaultBaseHeader = BasicTypes.DefaultBaseHeader;
-type DefaultResponseWrapper<T> = BasicTypes.DefaultResponseWrapper<T>;
-type ErrorDetails = BasicTypes.ErrorDetails;
-type PublicUploadCredentials = BasicTypes.PublicUploadCredentials;
-type Request = BasicTypes.Request;
-type SigningRequest = BasicTypes.SigningRequest;
-type ContentType = BasicTypes.ContentType;
-type CountryCode = BasicTypes.CountryCode;
-type ErrType = BasicTypes.ErrType;
-type Gender = BasicTypes.Gender;
-type Locale = BasicTypes.Locale;
-type Platform = BasicTypes.Platform;
-
-export { type ContentType, type CountryCode, type DefaultBaseHeader, type DefaultResponseWrapper, type ErrType, type ErrorDetails, type Gender, type IRequest, type LabeledDictionaryItem, type Locale, LocalizedDictionary, type Platform, type PublicUploadCredentials, type Request, type RequestProps, type SigningRequest, useRequest };
+export { type IRequest, type LabeledDictionaryItem, LocalizedDictionary, type RequestProps, request, useRequest };
