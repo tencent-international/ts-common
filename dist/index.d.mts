@@ -29,7 +29,54 @@ interface RequestProps {
 interface IRequest<T extends any = any> {
     (props: RequestProps): Promise<T>;
 }
-declare function setInstance(i: IRequest): void;
+declare function setRequestProvider(p: IRequest): void;
 declare function request<T extends any = any>(props: RequestProps): Promise<T>;
+declare class RequestError extends Error {
+    readonly code: number;
+    readonly errorType: string;
+    constructor(message: string, code?: number, errorType?: string);
+}
 
-export { type IRequest, type LabeledDictionaryItem, LocalizedDictionary, type RequestProps, request, setInstance };
+declare class EventBus {
+    private subscribers;
+    private onFirstSubscribeHandlers;
+    private onLastSubscribeHandlers;
+    subscribe(topic: string, subscriber: (event: any) => Promise<void>): () => void;
+    unsubscribe(topic: string, subscriber: (event: any) => Promise<void>): void;
+    dispatch(topic: string, event: any): void;
+    onFirstSubscribe(onFirstSubscribeHandler: (topic: string) => void): () => void;
+    onLastSubscribe(onLastSubscribeHandler: (topic: string) => void): () => void;
+    countTopic(): Record<string, number>;
+    topics(): string[];
+    subscriberChannel<T>(topic: string): SubscriberChannel<T>;
+    dispatcherChannel<T>(topic: string): DispatcherChannel<T>;
+}
+declare class RemoteEventBus extends EventBus {
+    private publishProvider?;
+    constructor(publishProvider?: (topic: string, event: any) => void);
+    setPublishProvider(publishProvider: (topic: string, event: any) => void): void;
+    publish(topic: string, event: any): void;
+    publisherChannel<T>(topic: string): PublisherChannel<T>;
+}
+declare class DispatcherChannel<T> {
+    readonly topic: string;
+    private readonly bus;
+    constructor(bus: EventBus, topic: string);
+    dispatch(event: T): void;
+}
+declare class SubscriberChannel<T> {
+    readonly topic: string;
+    private readonly bus;
+    constructor(bus: EventBus, topic: string);
+    subscribe(subscriber: (event: T) => Promise<void>): () => void;
+    unsubscribe(subscriber: (event: T) => Promise<void>): void;
+}
+declare class PublisherChannel<T> {
+    readonly topic: string;
+    private readonly bus;
+    constructor(bus: RemoteEventBus, topic: string);
+    publish(event: T): void;
+}
+declare const defaultRemoteEventBus: RemoteEventBus;
+
+export { DispatcherChannel, type IRequest, type LabeledDictionaryItem, LocalizedDictionary, PublisherChannel, RemoteEventBus, RequestError, type RequestProps, SubscriberChannel, defaultRemoteEventBus, request, setRequestProvider };

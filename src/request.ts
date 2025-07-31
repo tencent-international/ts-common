@@ -10,17 +10,17 @@ export interface IRequest<T extends any = any> {
   (props: RequestProps): Promise<T>;
 }
 
-let instance: IRequest | undefined;
+let provider: IRequest | undefined;
 
-export function setRequestInstance(i: IRequest): void {
-  instance = i;
+export function setRequestProvider(p: IRequest): void {
+  provider = p;
 }
 
 export async function request<T extends any = any>(props: RequestProps): Promise<T> {
-  if (!instance) {
-    throw new Error('Request instance is not initialized. Please ensure that the instance is properly configured before making requests.');
+  if (!provider) {
+    throw new Error('Request provider is not initialized. Please ensure that the provider is properly configured before making requests.');
   }
-  return instance(props);
+  return provider(props);
 }
 
 export class RequestError extends Error {

@@ -66,20 +66,20 @@ class EventBus {
 
 export class RemoteEventBus extends EventBus {
 
-    private sender?: (topic: string, event: any) => void;
+    private publishProvider?: (topic: string, event: any) => void;
 
-    constructor(sender?: (topic: string, event: any) => void) {
+    constructor(publishProvider?: (topic: string, event: any) => void) {
         super();
-        this.sender = sender;
+        this.publishProvider = publishProvider;
     }
 
-    public setSender(sender: (topic: string, event: any) => void): void {
-        this.sender = sender;
+    public setPublishProvider(publishProvider: (topic: string, event: any) => void): void {
+        this.publishProvider = publishProvider;
     }
 
     public publish(topic: string, event: any): void {
-        if (this.sender) {
-            this.sender(topic, event);
+        if (this.publishProvider) {
+            this.publishProvider(topic, event);
         } else {
             throw new Error('RemoteEventBus is not initialized. Please ensure that the instance is properly configured before making requests.');
         }
