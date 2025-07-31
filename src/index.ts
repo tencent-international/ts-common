@@ -3,3 +3,5 @@ export * from './dictionary';
 
 // 导出所有请求相关功能  
 export * from './request';
+
+export * from './event';
