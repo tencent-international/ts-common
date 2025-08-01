@@ -14,6 +14,8 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
     - uses: actions/checkout@v4
@@ -30,11 +32,8 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
-    - name: Configure npm authentication
-      run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
-
     - name: Run release-it
-      run: npx release-it --ci --increment=patch
+      run: npx release-it --ci --increment=patch --npm.skipChecks
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
