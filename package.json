@@ -1,6 +1,6 @@
 {
   "name": "@tencent-international/ts-common",
-  "version": "1.2.3",
+  "version": "1.0.0",
   "description": "TypeScript 通用类型和工具库",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -33,9 +33,6 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tencent-international/ts-common.git"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
