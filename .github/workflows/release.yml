@@ -14,6 +14,7 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    if: github.actor != 'peter-evans[bot]'
     env:
       NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GIT_AUTHOR_NAME: "GitHub Action"
@@ -40,6 +41,7 @@ jobs:
       run: npx release-it --ci --increment=patch --npm.skipChecks --github.release=false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Create PR for version sync
       uses: peter-evans/create-pull-request@v6
       with:
