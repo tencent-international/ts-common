@@ -1,86 +1,17 @@
 name: Release
 
 on:
-  pull_request:
+  push:
     branches: [ main ]
-    types: [ opened, synchronize, reopened, closed ]
 
-# 添加权限配置
 permissions:
   contents: write
   issues: write
   pull-requests: write
 
 jobs:
-  # 检查 PR 是否可以发布
-  check-pr:
-    runs-on: ubuntu-latest
-    if: github.event.action != 'closed'
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Use Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20.x'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Type check
-      run: npm run type-check
-    
-    - name: Lint
-      run: npm run lint
-    
-    - name: Build
-      run: npm run build
-    
-    - name: Check build output
-      run: |
-        echo "Build files:"
-        ls -la dist/
-        find dist/ -type f -name "*.js" -o -name "*.mjs" -o -name "*.d.ts" | sort
-    
-    - name: Comment PR status
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const { data: comments } = await github.rest.issues.listComments({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            issue_number: context.issue.number,
-          });
-          
-          const botComment = comments.find(comment => 
-            comment.user.type === 'Bot' && 
-            comment.body.includes('🚀 Release Status')
-          );
-          
-          const status = '✅ **Ready for Release**\n\n- ✅ Type check passed\n- ✅ Lint passed\n- ✅ Build successful\n- ✅ All tests passed';
-          
-          if (botComment) {
-            await github.rest.issues.updateComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              comment_id: botComment.id,
-              body: status
-            });
-          } else {
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: status
-            });
-          }
-
-  # 当 PR 被合并时自动发布
   release:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
     
     steps:
     - uses: actions/checkout@v4
@@ -129,14 +60,18 @@ jobs:
       env:
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: Create Git tag and push
+    - name: Commit and push version update
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add package.json package-lock.json
         git commit -m "chore: bump version to ${{ steps.new_version.outputs.new_version }}"
+        git push origin main
+    
+    - name: Create Git tag
+      run: |
         git tag -a "v${{ steps.new_version.outputs.new_version }}" -m "Release v${{ steps.new_version.outputs.new_version }}"
-        git push origin main --tags
+        git push origin "v${{ steps.new_version.outputs.new_version }}"
     
     - name: Create Release
       uses: actions/create-release@v1
@@ -151,7 +86,7 @@ jobs:
           **Version Bump:** patch
           
           ### Changes
-          - Merged PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}
+          - Auto release from main branch
           
           ### Build Info
           - Node.js: 20.x
@@ -163,27 +98,4 @@ jobs:
           - Package: @tencent-international/ts-common
           - Registry: GitHub Packages
         draft: false
-        prerelease: false
-    
-    - name: Comment on PR
-      uses: actions/github-script@v7
-      with:
-        script: |
-          await github.rest.issues.createComment({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            issue_number: ${{ github.event.pull_request.number }},
-            body: `🎉 **Auto Release Complete!**
-            
-            **Version:** v${{ steps.new_version.outputs.new_version }}
-            **Bump Type:** patch
-            
-            ✅ Package published to GitHub Packages
-            ✅ Git tag created: v${{ steps.new_version.outputs.new_version }}
-            ✅ GitHub Release created
-            
-            📦 **Package:** \`@tencent-international/ts-common@${{ steps.new_version.outputs.new_version }}\`
-            🔗 **Registry:** https://npm.pkg.github.com
-            
-            💡 **Note:** For major/minor version bumps, please manually update package.json version.`
-          }); 
+        prerelease: false 
