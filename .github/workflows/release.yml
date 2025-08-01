@@ -41,23 +41,3 @@ jobs:
       run: npx release-it --ci --increment=patch --npm.skipChecks --github.release=false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Create PR for version sync
-      uses: peter-evans/create-pull-request@v6
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        branch: "sync-version"
-        title: "chore: sync version bump"
-        commit-message: "chore: sync version bump"
-        body: |
-          ## 🔄 Version Sync
-          
-          This PR syncs the version bump changes to the main branch.
-          
-          **Changes:**
-          - Updated package.json version
-          - Updated package-lock.json
-          
-          **Note:** This is an automated PR to sync version changes.
-        delete-branch: true
-

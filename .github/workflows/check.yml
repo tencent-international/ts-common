@@ -4,10 +4,6 @@ on:
   pull_request:
     branches: [ main ]
 
-permissions:
-  contents: write
-  pull-requests: write
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -38,12 +34,3 @@ jobs:
         echo "Build files:"
         ls -la dist/
         find dist/ -type f -name "*.js" -o -name "*.mjs" -o -name "*.d.ts" | sort
-    
-  # Bot PR直接通过测试
-  bot-test:
-    runs-on: ubuntu-latest
-    if: github.actor == 'peter-evans[bot]'
-    
-    steps:
-    - name: Bot PR - Auto Pass
-      run: echo "Bot PR automatically passed" 

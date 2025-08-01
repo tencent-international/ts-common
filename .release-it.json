@@ -2,10 +2,10 @@
   "git": {
     "commit": true,
     "tag": true,
-    "push": false
+    "push": true
   },
   "github": {
-    "release": true,
+    "release": false,
     "assets": "dist/*"
   },
   "npm": {
