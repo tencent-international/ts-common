@@ -34,7 +34,6 @@ jobs:
       run: npx release-it --ci
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Create PR for version sync
       uses: peter-evans/create-pull-request@v6
