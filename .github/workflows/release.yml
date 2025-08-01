@@ -5,6 +5,12 @@ on:
     branches: [ main ]
     types: [ opened, synchronize, reopened, closed ]
 
+# 添加权限配置
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
 jobs:
   # 检查 PR 是否可以发布
   check-pr:
