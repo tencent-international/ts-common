@@ -34,7 +34,7 @@ jobs:
       run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
 
     - name: Run release-it
-      run: npx release-it --ci
+      run: npx release-it --ci --increment=patch
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
