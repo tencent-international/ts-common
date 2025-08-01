@@ -37,10 +37,9 @@ jobs:
       run: npm ci
 
     - name: Run release-it
-      run: npx release-it --ci --increment=patch --npm.skipChecks
+      run: npx release-it --ci --increment=patch --npm.skipChecks --github.release=false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Create PR for version sync
       uses: peter-evans/create-pull-request@v6
       with:
@@ -59,3 +58,4 @@ jobs:
           
           **Note:** This is an automated PR to sync version changes.
         delete-branch: true
+
