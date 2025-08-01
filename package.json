@@ -38,10 +38,12 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
+    "@release-it/bumper": "^7.0.5",
     "@types/node": "^22.0.0",
     "@typescript-eslint/eslint-plugin": "^8.34.1",
     "@typescript-eslint/parser": "^8.34.1",
     "eslint": "^9.29.0",
+    "release-it": "^19.0.4",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
   },

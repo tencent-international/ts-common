@@ -6,96 +6,40 @@ on:
 
 permissions:
   contents: write
+  packages: write
+  id-token: write
   issues: write
   pull-requests: write
 
 jobs:
   release:
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
-        token: ${{ secrets.GITHUB_TOKEN }}
-    
+
     - name: Use Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20.x'
         cache: 'npm'
         registry-url: 'https://npm.pkg.github.com'
-    
+
     - name: Install dependencies
       run: npm ci
-    
+
     - name: Build
       run: npm run build
-    
-    - name: Get current version
-      id: current_version
-      run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-    
-    - name: Bump patch version
-      id: new_version
-      run: |
-        CURRENT_VERSION="${{ steps.current_version.outputs.version }}"
-        
-        # 解析版本号
-        IFS='.' read -r major minor patch <<< "$CURRENT_VERSION"
-        
-        # 只升级 patch 版本
-        NEW_PATCH=$((patch + 1))
-        NEW_VERSION="$major.$minor.$NEW_PATCH"
-        
-        echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
-        echo "bump_type=patch" >> $GITHUB_OUTPUT
-    
-    - name: Update package.json version
-      run: |
-        npm version ${{ steps.new_version.outputs.new_version }} --no-git-tag-version
+
+    - name: Run release-it
+      run: npx release-it --ci --no-npm.publish
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Publish to GitHub Packages
       run: npm publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Commit and push version update
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add package.json package-lock.json
-        git commit -m "chore: bump version to ${{ steps.new_version.outputs.new_version }}"
-        git push origin main
-    
-    - name: Create Git tag
-      run: |
-        git tag -a "v${{ steps.new_version.outputs.new_version }}" -m "Release v${{ steps.new_version.outputs.new_version }}"
-        git push origin "v${{ steps.new_version.outputs.new_version }}"
-    
-    - name: Create Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v${{ steps.new_version.outputs.new_version }}
-        release_name: Release v${{ steps.new_version.outputs.new_version }}
-        body: |
-          ## 🚀 Release v${{ steps.new_version.outputs.new_version }}
-          
-          **Version Bump:** patch
-          
-          ### Changes
-          - Auto release from main branch
-          
-          ### Build Info
-          - Node.js: 20.x
-          - Build: ✅ Successful
-          - Type Check: ✅ Passed
-          - Lint: ✅ Passed
-          
-          ### Package Info
-          - Package: @tencent-international/ts-common
-          - Registry: GitHub Packages
-        draft: false
-        prerelease: false 

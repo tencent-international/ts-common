@@ -1,0 +1,105 @@
+name: Auto Merge Release PRs
+
+on:
+  pull_request:
+    types: [opened, labeled, closed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    if: |
+      github.event_name == 'pull_request' &&
+      contains(github.event.pull_request.labels.*.name, 'release') &&
+      contains(github.event.pull_request.labels.*.name, 'auto-merge') &&
+      github.event.pull_request.mergeable == true &&
+      github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Auto merge PR
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { data: pull } = await github.rest.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.issue.number,
+          });
+          
+          if (pull.mergeable && !pull.merged) {
+            await github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+              merge_method: 'squash',
+              commit_title: `🚀 Release ${pull.title}`,
+              commit_message: `Auto-merge release PR: ${pull.title}\n\n${pull.body || ''}`
+            });
+            console.log('✅ PR auto-merged successfully');
+          } else {
+            console.log('⏳ PR not ready for merge yet');
+          }
+
+  # 当发布PR被合并时的处理
+  create-release-after-merge:
+    if: |
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged == true &&
+      contains(github.event.pull_request.labels.*.name, 'release')
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Get version from PR title
+      id: version
+      run: |
+        # 从PR标题中提取版本号
+        VERSION=$(echo "${{ github.event.pull_request.title }}" | grep -o 'v[0-9]\+\.[0-9]\+\.[0-9]\+' | head -1)
+        VERSION=${VERSION#v}  # 移除 'v' 前缀
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+    
+    - name: Create Git tag
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git tag -a "v${{ steps.version.outputs.version }}" -m "Release v${{ steps.version.outputs.version }}"
+        git push origin "v${{ steps.version.outputs.version }}"
+    
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ steps.version.outputs.version }}
+        release_name: Release v${{ steps.version.outputs.version }}
+        body: |
+          ## 🚀 Release v${{ steps.version.outputs.version }}
+          
+          **Version Bump:** patch
+          
+          ### Changes
+          - Auto release from main branch
+          - Package published to GitHub Packages
+          
+          ### Build Info
+          - Node.js: 20.x
+          - Build: ✅ Successful
+          - Type Check: ✅ Passed
+          - Lint: ✅ Passed
+          
+          ### Package Info
+          - Package: @tencent-international/ts-common
+          - Registry: GitHub Packages
+          
+          ---
+          
+          **This release was automatically created when the release PR was merged.**
+        draft: false
+        prerelease: false 

@@ -1,0 +1,19 @@
+{
+  "git": {
+    "commit": true,
+    "tag": true,
+    "push": true
+  },
+  "github": {
+    "release": true,
+    "assets": "dist/*"
+  },
+  "npm": {
+    "publish": false
+  },
+  "plugins": {
+    "@release-it/bumper": {
+      "infile": "package.json"
+    }
+  }
+}

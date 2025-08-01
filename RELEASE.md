@@ -1,126 +1,58 @@
-# 自动化发布指南
+# 发布流程说明
 
-## 🚀 发布流程
+## 概述
 
-本项目使用 GitHub Actions 实现自动化发布。当 PR 合并到 `main` 分支时，会自动触发发布流程。
+本项目使用自动化的发布流程，当代码推送到 `main` 分支时会自动触发发布流程。
 
-## 📋 发布检查清单
+## 发布流程
 
-### PR 创建时
-- ✅ TypeScript 类型检查
-- ✅ ESLint 代码检查  
-- ✅ 构建测试
-- ✅ 构建文件验证
+### 1. 推送触发发布
+当有代码推送到 `main` 分支时：
 
-### PR 合并时
-- ✅ 自动版本号升级 (patch)
-- ✅ 发布到 GitHub Packages
-- ✅ 创建 Git 标签
-- ✅ 创建 GitHub Release
-- ✅ 在 PR 中评论发布结果
+1. **获取当前版本**: 使用 `npm pkg get version` 获取当前版本号
+2. **计算新版本**: 自动将 patch 版本号 +1
+3. **设置新版本**: 使用 `npm pkg set version` 更新版本号
+4. **构建项目**: 运行 `npm run build`
+5. **发布包**: 发布到 GitHub Packages
+6. **创建发布分支**: 创建 `main/v{新版本号}` 分支
+7. **创建PR**: 自动创建带有 `release` 和 `auto-merge` 标签的PR
 
-## 🔢 版本号管理策略
+### 2. 自动合并PR
+当发布PR被创建时：
 
-### 自动版本升级
-- **每次合并 PR 时自动升级 patch 版本**
-- 例如：`1.2.3` → `1.2.4`
+1. **检查标签**: 确认PR有 `release` 和 `auto-merge` 标签
+2. **自动合并**: 如果PR可以合并，则自动合并到 `main` 分支
 
-### 手动版本升级
-对于 major 和 minor 版本升级，需要手动修改 `package.json`：
+### 3. 合并后创建Release
+当发布PR被合并时：
 
-```json
-{
-  "version": "1.3.0"  // 手动修改版本号
-}
-```
+1. **提取版本号**: 从PR标题中提取版本号
+2. **创建Git标签**: 创建版本标签
+3. **创建GitHub Release**: 在GitHub上创建正式发布
 
-### 版本升级类型
+## 工作流文件
 
-| 升级类型 | 示例 | 操作方式 |
-|----------|------|----------|
-| **Patch** | `1.2.3` → `1.2.4` | 自动升级 |
-| **Minor** | `1.2.3` → `1.3.0` | 手动修改 package.json |
-| **Major** | `1.2.3` → `2.0.0` | 手动修改 package.json |
+- `.github/workflows/release.yml`: 主要的发布流程（推送时触发）
+- `.github/workflows/auto-merge.yml`: 自动合并PR和创建Release的流程
 
-## 📝 PR 标题示例
+## 版本号规则
 
-```
-feat: add new dictionary functionality  # 自动 patch 升级
-fix: resolve event bus memory leak      # 自动 patch 升级
-docs: update README                     # 自动 patch 升级
-```
+- 当前版本: `1.2.3`
+- 新版本: `1.2.4` (patch + 1)
+- 只升级 patch 版本，保持 major 和 minor 版本不变
 
-## 🔧 手动版本升级步骤
 
-如果需要升级 minor 或 major 版本：
 
-1. **修改 package.json**：
-   ```json
-   {
-     "version": "1.3.0"  // 手动设置新版本
-   }
-   ```
+## 注意事项
 
-2. **提交版本更新**：
-   ```bash
-   git add package.json
-   git commit -m "chore: bump version to 1.3.0"
-   git push origin main
-   ```
+1. 确保 `main` 分支的代码质量，因为推送会直接触发发布
+2. 发布PR会自动合并，无需手动干预
+3. 所有发布都会自动创建Git标签和GitHub Release
+4. 包会发布到 GitHub Packages 注册表
 
-3. **创建 PR 并合并** → 自动发布
-
-## 🚀 性能优化
-
-### 缓存策略
-- ✅ **npm 缓存**：使用 GitHub Actions 的 npm 缓存
-- ✅ **快速安装**：使用 `npm ci` 而不是 `npm install`
-- ✅ **依赖复用**：避免重复安装依赖
-
-### 构建时间优化
-- 依赖安装时间减少约 60-80%
-- 总构建时间显著提升
-
-## 🔧 手动发布
+## 手动发布
 
 如果需要手动发布，可以：
 
-1. 直接推送到 main 分支
-2. 或者使用 GitHub CLI：
-   ```bash
-   gh workflow run release.yml
-   ```
-
-## 🐛 故障排除
-
-### npm 依赖问题
-如果遇到 `@rollup/rollup-linux-x64-gnu` 模块找不到的错误，这是 npm 的已知 bug。解决方法：
-
-```bash
-# 清理并重新安装依赖
-rm -rf node_modules package-lock.json
-npm install
-```
-
-GitHub Actions 会自动处理这个问题。
-
-## 📦 包信息
-
-- **包名**: `@tencent-international/ts-common`
-- **注册表**: GitHub Packages
-- **安装**: `npm install @tencent-international/ts-common`
-
-## 🔍 发布状态
-
-发布完成后，你可以在以下位置查看结果：
-
-1. **GitHub Packages**: https://npm.pkg.github.com
-2. **GitHub Releases**: 仓库的 Releases 页面
-3. **PR 评论**: 自动发布的评论信息
-
-## ⚠️ 注意事项
-
-- 每次合并 PR 会自动升级 patch 版本
-- major/minor 版本需要手动修改 package.json
-- 确保 PR 标题清晰描述变更内容
-- 如果遇到构建错误，检查是否与 npm 依赖问题相关 
+1. 直接推送到 `main` 分支
+2. 或者手动创建带有 `release` 和 `auto-merge` 标签的PR 
