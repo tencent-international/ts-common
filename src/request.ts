@@ -24,13 +24,21 @@ export async function request<T extends any = any>(props: RequestProps): Promise
 }
 
 export class RequestError extends Error {
+  constructor(message: string = "Request failed") {
+    super(message);
+    this.name = 'RequestError';
+    Object.setPrototypeOf(this, RequestError.prototype);
+  }
+}
+
+export class ResponseError extends Error {
   public readonly code: number;
   public readonly errorType: string;
   constructor(message: string, code = 0, errorType = 'unknown') {
     super(message);
-    this.name = 'RequestError';
+    this.name = 'ResponseError';
     this.code = code;
     this.errorType = errorType;
-    Object.setPrototypeOf(this, RequestError.prototype);
+    Object.setPrototypeOf(this, ResponseError.prototype);
   }
 }
