@@ -15,5 +15,6 @@
     "@release-it/bumper": {
       "infile": "package.json"
     }
-  }
+  },
+  "increment": "patch"
 }
