@@ -9,7 +9,7 @@
     "assets": "dist/*"
   },
   "npm": {
-    "publish": true
+    "publish": false
   },
   "plugins": {
     "@release-it/bumper": {
