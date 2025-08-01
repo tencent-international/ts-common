@@ -2,10 +2,12 @@
 
 class EventBus {
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private subscribers: Map<string, Set<(event: any) => Promise<void>>> = new Map();
     private onFirstSubscribeHandlers: Set<(topic: string) => void> = new Set();
     private onLastSubscribeHandlers: Set<(topic: string) => void> = new Set();
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public subscribe(topic: string, subscriber: (event: any) => Promise<void>): () => void {
         const set = this.subscribers.get(topic) ?? new Set();
         const wasEmpty = set.size === 0;
@@ -18,6 +20,7 @@ class EventBus {
         return () => this.unsubscribe(topic, subscriber);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public unsubscribe(topic: string, subscriber: (event: any) => Promise<void>): void {
         this.subscribers.get(topic)?.delete(subscriber);
         if (!this.subscribers.get(topic)?.size) {
@@ -26,8 +29,10 @@ class EventBus {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public dispatch(topic: string, event: any): void {
         this.subscribers.get(topic)?.forEach(subscriber => subscriber(event).catch(error => {
+            // eslint-disable-next-line no-console
             console.error(`EventBus emit error: ${error}`);
         }));
     }
@@ -66,20 +71,25 @@ class EventBus {
 
 export class RemoteEventBus extends EventBus {
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private publishProvider?: (topic: string, event: any) => void;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(publishProvider?: (topic: string, event: any) => void) {
         super();
         this.publishProvider = publishProvider;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public setPublishProvider(publishProvider: (topic: string, event: any) => void): void {
         this.publishProvider = publishProvider;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public publish(topic: string, event: any): void {
         if (this.publishProvider) {
-            this.publishProvider(topic, event);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            this.publishProvider(topic, event as any);
         } else {
             throw new Error('RemoteEventBus is not initialized. Please ensure that the instance is properly configured before making requests.');
         }
@@ -98,8 +108,10 @@ export class DispatcherChannel<T> {
         this.bus = bus;
     }
 
+     
     public dispatch(event: T): void {
-        this.bus.dispatch(this.topic, event);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        this.bus.dispatch(this.topic, event as any);
     }
 }
 
@@ -111,12 +123,16 @@ export class SubscriberChannel<T> {
         this.bus = bus;
     }
 
+     
     public subscribe(subscriber: (event: T) => Promise<void>): () => void {
-        return this.bus.subscribe(this.topic, subscriber);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return this.bus.subscribe(this.topic, subscriber as any);
     }
 
+     
     public unsubscribe(subscriber: (event: T) => Promise<void>): void {
-        this.bus.unsubscribe(this.topic, subscriber);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        this.bus.unsubscribe(this.topic, subscriber as any);
     }
 }
 
@@ -127,8 +143,11 @@ export class PublisherChannel<T> {
         this.topic = topic;
         this.bus = bus;
     }
+
+     
     public publish(event: T): void {
-        this.bus.publish(this.topic, event);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        this.bus.publish(this.topic, event as any);
     }
 }
 

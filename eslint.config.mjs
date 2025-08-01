@@ -15,7 +15,6 @@ export default [
       },
       globals: {
         console: 'readonly',
-        BasicTypes: 'readonly',
       },
     },
     plugins: {
@@ -38,13 +37,6 @@ export default [
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
-    },
-  },
-  {
-    files: ['example-usage.ts'],
-    rules: {
-      '@typescript-eslint/no-unused-vars': 'off',
-      'no-console': 'off',
     },
   },
   {

@@ -2,10 +2,13 @@ export interface RequestProps {
   ignoreAuth?: boolean;
   method: 'DELETE' | 'GET' | 'POST' | 'PUT' | 'PATCH' | 'OPTIONS' | 'HEAD';
   url: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data?: any;
-  header?: object;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  header?: any;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface IRequest<T extends any = any> {
   (props: RequestProps): Promise<T>;
 }
@@ -16,11 +19,12 @@ export function setRequestProvider(p: IRequest): void {
   provider = p;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function request<T extends any = any>(props: RequestProps): Promise<T> {
   if (!provider) {
     throw new Error('Request provider is not initialized. Please ensure that the provider is properly configured before making requests.');
   }
-  return provider(props);
+  return provider(props) as Promise<T>;
 }
 
 export class RequestError extends Error {
