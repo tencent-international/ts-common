@@ -47,7 +47,7 @@ export class EventBus {
         return () => this.onLastSubscribeHandlers.delete(onLastSubscribeHandler);
     }
 
-    public countTopic(): Record<string, number> {
+    public countSubscriberTopic(): Record<string, number> {
         const result: Record<string, number> = {};
         this.subscribers.forEach((subscribers, topic) => {
             result[topic] = subscribers.size;
@@ -55,16 +55,20 @@ export class EventBus {
         return result;
     }
 
-    public topics(): string[] {
+    public subscriberTopics(): string[] {
         return Array.from(this.subscribers.keys());
     }
 
+    public channel<T>(topic: string): Channel<T> {
+        return new ChannelImpl<T>(this, topic);
+    }
+
     public subscriberChannel<T>(topic: string): SubscriberChannel<T> {
-        return new SubscriberChannel<T>(this, topic);
+        return new ChannelImpl<T>(this, topic);
     }
 
     public dispatcherChannel<T>(topic: string): DispatcherChannel<T> {
-        return new DispatcherChannel<T>(this, topic);
+        return new ChannelImpl<T>(this, topic);
     }
 
 }
@@ -96,11 +100,27 @@ export class RemoteEventBus extends EventBus {
     }
 
     public publisherChannel<T>(topic: string): PublisherChannel<T> {
-        return new PublisherChannel<T>(this, topic);
+        return new PublisherChannelImpl<T>(this, topic);
     }
 }
 
-export class DispatcherChannel<T> {
+export interface DispatcherChannel<T> {
+    dispatch(event: T): void;
+}
+
+export interface SubscriberChannel<T> {
+    subscribe(subscriber: (event: T) => Promise<void>): () => void;
+    unsubscribe(subscriber: (event: T) => Promise<void>): void;
+}
+
+export interface PublisherChannel<T> {
+    publish(event: T): void;
+}
+
+export interface Channel<T> extends DispatcherChannel<T>, SubscriberChannel<T> {
+}
+
+class ChannelImpl<T> implements Channel<T> {
     public readonly topic: string;
     private readonly bus: EventBus;
     constructor(bus: EventBus, topic: string) {
@@ -108,35 +128,20 @@ export class DispatcherChannel<T> {
         this.bus = bus;
     }
 
-     
     public dispatch(event: T): void {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        this.bus.dispatch(this.topic, event as any);
-    }
-}
-
-export class SubscriberChannel<T> {
-    public readonly topic: string;
-    private readonly bus: EventBus;
-    constructor(bus: EventBus, topic: string) {
-        this.topic = topic;
-        this.bus = bus;
+        this.bus.dispatch(this.topic, event);
     }
 
-     
     public subscribe(subscriber: (event: T) => Promise<void>): () => void {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return this.bus.subscribe(this.topic, subscriber as any);
+        return this.bus.subscribe(this.topic, subscriber);
     }
 
-     
     public unsubscribe(subscriber: (event: T) => Promise<void>): void {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        this.bus.unsubscribe(this.topic, subscriber as any);
+        this.bus.unsubscribe(this.topic, subscriber);
     }
 }
 
-export class PublisherChannel<T> {
+class PublisherChannelImpl<T> implements PublisherChannel<T> {
     public readonly topic: string;
     private readonly bus: RemoteEventBus;
     constructor(bus: RemoteEventBus, topic: string) {
@@ -144,10 +149,8 @@ export class PublisherChannel<T> {
         this.bus = bus;
     }
 
-     
     public publish(event: T): void {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        this.bus.publish(this.topic, event as any);
+        this.bus.publish(this.topic, event);
     }
 }
 
