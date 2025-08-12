@@ -1,6 +1,6 @@
 
 
-class EventBus {
+export class EventBus {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private subscribers: Map<string, Set<(event: any) => Promise<void>>> = new Map();
