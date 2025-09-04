@@ -4,8 +4,7 @@ export class EventBus {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private subscribers: Map<string, Set<(event: any) => Promise<void>>> = new Map();
-    private onFirstSubscribeHandlers: Set<(topic: string) => void> = new Set();
-    private onLastSubscribeHandlers: Set<(topic: string) => void> = new Set();
+    private subscriberChangeHandlers: Set<(topics: string[], change: { added?: string; removed?: string }) => void> = new Set();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public subscribe(topic: string, subscriber: (event: any) => Promise<void>): () => void {
@@ -14,18 +13,28 @@ export class EventBus {
         set.add(subscriber);
         this.subscribers.set(topic, set);
         if (wasEmpty) {
-            this.onFirstSubscribeHandlers.forEach(fn => fn(topic));
-            this.subscribers.set(topic, set);
+            const topics = this.topics();
+            this.subscriberChangeHandlers.forEach(fn => fn(topics, { added: topic }));
         }
         return () => this.unsubscribe(topic, subscriber);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public unsubscribe(topic: string, subscriber: (event: any) => Promise<void>): void {
-        this.subscribers.get(topic)?.delete(subscriber);
-        if (!this.subscribers.get(topic)?.size) {
+        const set = this.subscribers.get(topic);
+        if (!set) {
+            return;
+        }
+        
+        const exists = set.delete(subscriber);
+        if (!exists) {
+            return;
+        }
+    
+        if (set.size === 0) {
             this.subscribers.delete(topic);
-            this.onLastSubscribeHandlers.forEach(fn => fn(topic));
+            const topics = this.topics();
+            this.subscriberChangeHandlers.forEach(fn => fn(topics, { removed: topic }));
         }
     }
 
@@ -37,14 +46,13 @@ export class EventBus {
         }));
     }
 
-    public onFirstSubscribe(onFirstSubscribeHandler: (topic: string) => void): () => void {
-        this.onFirstSubscribeHandlers.add(onFirstSubscribeHandler);
-        return () => this.onFirstSubscribeHandlers.delete(onFirstSubscribeHandler);
+    public onSubscriberChange(handler: (topics: string[], change: { added?: string; removed?: string }) => void): () => void {
+        this.subscriberChangeHandlers.add(handler);
+        return () => this.offSubscriberChange(handler);
     }
 
-    public onLastUnsubscribe(onLastSubscribeHandler: (topic: string) => void): () => void {
-        this.onLastSubscribeHandlers.add(onLastSubscribeHandler);
-        return () => this.onLastSubscribeHandlers.delete(onLastSubscribeHandler);
+    public offSubscriberChange(handler: (topics: string[], change: { added?: string; removed?: string }) => void): void {
+        this.subscriberChangeHandlers.delete(handler);
     }
 
     public countTopicSubscribers(): Record<string, number> {
