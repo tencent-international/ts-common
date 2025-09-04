@@ -42,12 +42,12 @@ export class EventBus {
         return () => this.onFirstSubscribeHandlers.delete(onFirstSubscribeHandler);
     }
 
-    public onLastSubscribe(onLastSubscribeHandler: (topic: string) => void): () => void {
+    public onLastUnsubscribe(onLastSubscribeHandler: (topic: string) => void): () => void {
         this.onLastSubscribeHandlers.add(onLastSubscribeHandler);
         return () => this.onLastSubscribeHandlers.delete(onLastSubscribeHandler);
     }
 
-    public countSubscriberTopic(): Record<string, number> {
+    public countTopicSubscribers(): Record<string, number> {
         const result: Record<string, number> = {};
         this.subscribers.forEach((subscribers, topic) => {
             result[topic] = subscribers.size;
@@ -55,7 +55,7 @@ export class EventBus {
         return result;
     }
 
-    public subscriberTopics(): string[] {
+    public topics(): string[] {
         return Array.from(this.subscribers.keys());
     }
 
@@ -118,6 +118,7 @@ export interface PublisherChannel<T> {
 }
 
 export interface Channel<T> extends DispatcherChannel<T>, SubscriberChannel<T> {
+    readonly topic: string;
 }
 
 class ChannelImpl<T> implements Channel<T> {
