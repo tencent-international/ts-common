@@ -1,5 +1,5 @@
 {
-  "name": "@tencent-international/ts-common",
+  "name": "@tencent-internal/ts-common",
   "version": "1.0.7",
   "description": "TypeScript 通用类型和工具库",
   "main": "dist/index.js",
