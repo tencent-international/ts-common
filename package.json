@@ -1,6 +1,6 @@
 {
   "name": "@tencent-internal/ts-common",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "TypeScript 通用类型和工具库",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
