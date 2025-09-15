@@ -1,6 +1,6 @@
-export interface RpcCaller<I extends any = any, O extends any = any> {
-    (input: I): Promise<O>;
-    (): Promise<O>;
+export interface RpcCaller<T extends any = any, U extends any = any> {
+    (params: U): Promise<T>;
+    (): Promise<T>;
 }
 
 let provider: RpcCaller | undefined;
@@ -9,9 +9,9 @@ export function setRpcProvider(p: RpcCaller): void {
     provider = p;
 }
 
-export function callRpcMethod<I extends any = any, O extends any = any>(input: I): Promise<O> {
+export function callRpcMethod<T extends any = any, U extends any = any>(params?: U): Promise<T> {
     if (!provider) {
         throw new Error('Rpc provider is not initialized. Please ensure that the provider is properly configured before making requests.');
     }
-    return provider(input);
+    return provider(params);
 }
